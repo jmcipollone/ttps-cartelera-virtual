@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<beans xmlns="http://www.springframework.org/schema/beans" 
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:tx="http://www.springframework.org/schema/tx"	
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+	http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.2.xsd
+	http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx.xsd"
+	default-autowire="byName">
+		
+	<!-- Fuente de datos de la aplicacion -->
+	<bean id="dataSource" class="org.springframework.jdbc.datasource.DriverManagerDataSource">
+		<property name="driverClassName" value="com.mysql.jdbc.Driver"/>
+		<property name="url" value="jdbc:mysql://localhost:3306/test_bd"/>
+		<property name="username" value="root"/>
+		<property name="password" value="xciting500"/>		
+	</bean>
+	
+	<!-- Proveedor/implementacion de JPA a utilizar -->
+	<bean id="jpaVendorAdapter" class="org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter">
+		<property name="database" value="MYSQL"></property>		
+	</bean>
+	
+	<!-- Configuracion del Entity Manager Factory (EMF) de JPA -->
+	<bean id="emf" class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean">
+		<!-- Declaracion de la fuente de datos a usar por parte de los Entity Managers (EMs) -->
+		<property name="dataSource" ref="dataSource"/>
+		<!-- Declaracion de la implementacion de JPA a usar -->
+		<property name="jpaVendorAdapter" ref="jpaVendorAdapter"/>				
+		<!-- Declaracion de los paquetes donde buscar las entidades -->
+		<property name="packagesToScan" value="modelos"/>
+		
+		<!-- Declaracion de las propiedades de JPA -->
+		<property name="jpaProperties">
+			<props>
+				<prop key="hibernate.dialect">org.hibernate.dialect.MySQL5InnoDBDialect</prop>
+				<prop key="hibernate.hbm2ddl.auto">update</prop>
+			</props>		
+		</property>		
+	</bean>
+	
+	<!-- Configuracion del manejador de transacciones de JPA -->
+	<bean id="transactionManager" class="org.springframework.orm.jpa.JpaTransactionManager">
+		<property name="entityManagerFactory" ref="emf"></property>
+	</bean>	
+	<tx:annotation-driven transaction-manager="transactionManager"/>
+
+		
+	<!-- Configurar los beans y sus dependencias mediante anotaciones -->
+	<context:annotation-config />
+	<context:component-scan base-package="modelos, daos, prueba" />
+										
+</beans>
