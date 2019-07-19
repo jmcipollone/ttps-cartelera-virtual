@@ -22,5 +22,12 @@ public class ImagenPublicacion extends RecursoPublicacion {
 	public void setPath(String path) {
 		this.path = path;
 	}
+	
+	// Otras funciones
+	
+	@Override
+	public boolean esImagen() {
+		return true;
+	}
 
 }

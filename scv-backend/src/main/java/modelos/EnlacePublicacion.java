@@ -23,5 +23,12 @@ public class EnlacePublicacion extends RecursoPublicacion {
 		this.url = url;
 	}
 	
+	// Otras funciones
+	
+	@Override
+	public boolean esEnlace() {
+		return true;
+	}
+	
 	
 }

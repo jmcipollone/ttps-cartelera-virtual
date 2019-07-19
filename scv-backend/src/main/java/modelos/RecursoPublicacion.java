@@ -32,6 +32,16 @@ public class RecursoPublicacion {
 		this.nombre = nombre;
 	}
 	
+	// Otras funciones
+	
+	public boolean esEnlace() {
+		return false;
+	}
+	
+	public boolean esImagen() {
+		return false;
+	}
+	
 	
 	
 

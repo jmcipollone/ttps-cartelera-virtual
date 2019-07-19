@@ -19,6 +19,13 @@ public class Tag {
 	private String nombre;	
 	private Date instanteCreacion;
 	
+	// Constructores
+	
+	public Tag(String nombre) {
+		this.nombre = nombre;
+		this.instanteCreacion = new Date();
+	}
+	
 	// Getters/setters
 
 	public long getId() {
