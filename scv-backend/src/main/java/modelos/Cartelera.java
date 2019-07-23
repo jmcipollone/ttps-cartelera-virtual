@@ -6,6 +6,17 @@ import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
+import javax.persistence.OneToMany;
+import javax.persistence.Table;
+
 /**
  * Clase del modelo que representa una cartelera virtual.
  * 
@@ -16,21 +27,54 @@ import java.util.List;
  * @author Juan Manuel Cipollone
  *
  */
+@Entity
+@Table(name="carteleras")
 public class Cartelera {
 	
 	// Propiedades
 	
-	private long id;	
+	@Id @GeneratedValue(strategy=GenerationType.IDENTITY)
+	private long id;
+	
+	@Column(unique=true, nullable=false, length=100)
 	private String nombre;
+	
+	@Column(nullable=false, length=255)
 	private String descripcion;
+	
+	@Column(nullable=false)
 	private boolean habilitada;
+	
+	@Column(nullable=false)
 	private Date instanteCreacion;
 	
 	// Relaciones
 	
+	@ManyToMany
+	@JoinTable(
+		name="carteleras_publicadores",
+		joinColumns=@JoinColumn(name="carteleraId", referencedColumnName="id"),
+		inverseJoinColumns=@JoinColumn(name="usuarioId", referencedColumnName="id")			
+	)
 	private List<Usuario> publicadores;
+	
+	@ManyToMany
+	@JoinTable(
+		name="carteleras_interesados",
+		joinColumns=@JoinColumn(name="carteleraId", referencedColumnName="id"),
+		inverseJoinColumns=@JoinColumn(name="usuarioId", referencedColumnName="id")
+	)
 	private List<Usuario> interesados;
+	
+	@ManyToMany
+	@JoinTable(
+		name="carteleras_tags",
+		joinColumns=@JoinColumn(name="carteleraId", referencedColumnName="id"),
+		inverseJoinColumns=@JoinColumn(name="tagId", referencedColumnName="id")
+	)
 	private List<Tag> tags;
+	
+	@OneToMany(mappedBy="cartelera")
 	private List<Publicacion> publicaciones;
 	
 	// Constructores
@@ -49,6 +93,8 @@ public class Cartelera {
 	public Cartelera(String nombre, String descripcion) {
 		this(nombre, descripcion, new ArrayList<Tag>());		
 	}
+	
+	public Cartelera() {}
 	
 	// Getters/setters
 
@@ -138,6 +184,17 @@ public class Cartelera {
 	
 	// Metodos de gestion de publicaciones
 	
+	public void agregarPublicacion(Publicacion publicacion) {
+		this.publicaciones.add(publicacion);
+		publicacion.setCartelera(this);
+	}
+	
+	public void removerPublicacion(Publicacion publicacion) {
+		if (this.publicaciones.remove(publicacion)) {
+			publicacion.setCartelera(null);			
+		}		
+	}
+	
 	public Publicacion obtenerUltimaPublicacion() {
 		if (this.publicaciones.isEmpty()) {
 			return null;
@@ -165,6 +222,26 @@ public class Cartelera {
 	
 	// Metodos de gestion de usuarios relacionados
 	
+	public void agregarPublicador(Usuario publicador) {
+		this.publicadores.add(publicador);
+		publicador.getCartelerasPermitidas().add(this);		
+	}
+	
+	public void removerPublicador(Usuario publicador) {
+		this.publicadores.remove(publicador);
+		publicador.getCartelerasPermitidas().remove(this);
+	}
+	
+	public void agregarInteresado(Usuario interesado) {
+		this.interesados.add(interesado);
+		interesado.getCartelerasConInteres().add(this);
+	}
+	
+	public void removerInteresador(Usuario interesado) {
+		this.interesados.remove(interesado);
+		interesado.getCartelerasConInteres().remove(this);
+	}
+	
 	/**
 	 * Recupera el listado de alumnos interesados en la cartelera ordenado por el nombre completo de los alumnos. 
 	 * 
@@ -183,8 +260,7 @@ public class Cartelera {
 		return alumnosInteresados;		
 	}
 	
-	
-	
+		
 	// Metodos para habilitacion/inhanilitacion de una cartelera
 		
 	public void habilitar() {

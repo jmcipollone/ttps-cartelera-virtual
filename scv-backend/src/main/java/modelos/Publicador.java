@@ -2,12 +2,17 @@ package modelos;
 
 import java.util.List;
 
+import javax.persistence.DiscriminatorValue;
+import javax.persistence.Entity;
+
 /**
  * Clase que modela el perfil de los publicadores que usan la aplicación.
  * 
  * @author Juan Manuel Cipollone
  *
  */
+@Entity
+@DiscriminatorValue("publicador")
 public class Publicador extends Perfil {
 	
 	// Permisos sobre acciones del sistema

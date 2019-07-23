@@ -1,11 +1,16 @@
 package modelos;
 
+import javax.persistence.DiscriminatorValue;
+import javax.persistence.Entity;
+
 /**
  * Clase que modela el perfil de los administradores que usan la aplicación.
  * 
  * @author Juan Manuel Cipollone
  *
  */
+@Entity
+@DiscriminatorValue("administrador")
 public class Administrador extends Perfil {
 	
 	// Permisos sobre acciones del sistema

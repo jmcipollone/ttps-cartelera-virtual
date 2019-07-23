@@ -2,12 +2,17 @@ package modelos;
 
 import java.util.List;
 
+import javax.persistence.DiscriminatorValue;
+import javax.persistence.Entity;
+
 /**
  * Clase del modelo que representa el perfil de los docentes que usan la aplicacion.
  * 
  * @author Juan Manuel Cipollone
  *
  */
+@Entity
+@DiscriminatorValue("docente")
 public class Docente extends Perfil {
 	
 	// Permisos sobre acciones del sistema

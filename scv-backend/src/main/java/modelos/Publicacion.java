@@ -6,6 +6,18 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
+import javax.persistence.Table;
+
 /**
  * Clase del modelo que representa una publicación en una cartelera virtual.
  * 
@@ -16,24 +28,54 @@ import java.util.List;
  * @author Juan Manuel Cipollone
  *
  */
+@Entity
+@Table(name="publicaciones")
 public class Publicacion {
 	
 	// Propiedades
 	
+	@Id @GeneratedValue(strategy=GenerationType.IDENTITY)
 	private long id;	
-	private String titulo;	
+	
+	@Column(nullable=false, length=100)
+	private String titulo;
+	
+	@Column(nullable=false, length=1000)
 	private String texto;	
-	private boolean habilitada;	
-	private boolean comentariosHabilitados;	
+	
+	@Column(nullable=false)
+	private boolean habilitada;
+	
+	@Column(nullable=false)
+	private boolean comentariosHabilitados;
+	
+	@Column(nullable=false)
 	private Date instanteCreacion;
 	
 	// Relaciones
 	
+	@ManyToOne
+	@JoinColumn(name="carteleraId", nullable=false)
 	private Cartelera cartelera;
+	
+	@ManyToOne
+	@JoinColumn(name="autorId", nullable=false)
 	private Usuario autor;
+	
+	@ManyToMany
+	@JoinTable(
+		name="publicaciones_tags",
+		joinColumns=@JoinColumn(name="publicacionId", referencedColumnName="id"),
+		inverseJoinColumns=@JoinColumn(name="tagId", referencedColumnName="id")
+	)
 	private List<Tag> tags;
+	
+	@OneToMany(mappedBy="publicacion")
 	private List<RecursoPublicacion> recursos;
-	private List<Comentario> comentarios;	
+	
+	@OneToMany(mappedBy="publicacion")
+	private List<Comentario> comentarios;
+	
 	
 	// Constructores
 	
@@ -50,6 +92,8 @@ public class Publicacion {
 		this.recursos = recursos;
 		this.comentarios = new ArrayList<Comentario>();
 	}
+	
+	public Publicacion() {}
 	
 	// Getters/setters
 
@@ -164,13 +208,14 @@ public class Publicacion {
 	}
 	
 	public void agregarRecurso(RecursoPublicacion recurso) {
-		if (!recursos.contains(recurso)) {
-			recursos.add(recurso);
-		}		
+		this.recursos.add(recurso);
+		recurso.setPublicacion(this);
 	}
 	
 	public void removerRecurso(RecursoPublicacion recurso) {
-		recursos.remove(recurso);
+		if (this.recursos.remove(recurso)) {
+			recurso.setPublicacion(null);
+		}
 	}
 	
 	public List<EnlacePublicacion> obtenerEnlaces() {
@@ -217,10 +262,13 @@ public class Publicacion {
 	
 	public void agregarComentario(Comentario comentario) {
 		this.comentarios.add(comentario);
+		comentario.setPublicacion(this);
 	}
 	
 	public void removerComentario(Comentario comentario) {
-		this.comentarios.remove(comentario);
+		if (this.comentarios.remove(comentario)) {
+			comentario.setPublicacion(null);
+		}
 	}
 		
 }

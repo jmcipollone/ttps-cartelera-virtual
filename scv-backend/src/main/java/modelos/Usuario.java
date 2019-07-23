@@ -6,30 +6,69 @@ import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToMany;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
+import javax.persistence.Table;
+
 /**
  * Clase del modelo que representa un usuario en la aplicacion
  * 
  * @author Juan Manuel Cipollone <jmcipollone@gmail.com>
  */
+@Entity
+@Table(name="usuarios")
 public class Usuario {
 	
 	// Propiedades
 	
+	@Id @GeneratedValue(strategy=GenerationType.IDENTITY)
 	private long id;
+	
+	@Column(unique=true, nullable=false, length=30)
 	private String nombreUsuario;
+	
+	@Column(nullable=false)
 	private String clave;
+	
+	@Column(unique=true, nullable=false)
 	private String email;
+	
+	@Column(nullable=false, length=30)
 	private String nombre;
+	
+	@Column(nullable=false, length=30)
 	private String apellido;
+	
+	@Column(nullable=false)
 	private boolean habilitado;
+	
+	@Column(nullable=false)
 	private Date instanteCreacion;
 	
 	// Relaciones
 	
+	@ManyToOne
+	@JoinColumn(name="perfilId", nullable=false)
 	private Perfil perfil;
+	
+	@ManyToMany(mappedBy="publicadores")
 	private List<Cartelera> cartelerasPermitidas;
+	
+	@ManyToMany(mappedBy="interesados")
 	private List<Cartelera> cartelerasConInteres;
+	
+	@ManyToOne
+	@JoinColumn(name="modoNotificacionId")
 	private ModoNotificacion modoNotificacion;
+	
+	@OneToMany(mappedBy="autor")
 	private List<Publicacion> publicaciones;
 	
 	// Constructores
@@ -48,6 +87,8 @@ public class Usuario {
 		this.modoNotificacion = modo;
 		this.publicaciones = new ArrayList<Publicacion>();
 	}
+	
+	public Usuario() {}
 	
 	
 	// Metodos getters/setters
@@ -197,20 +238,26 @@ public class Usuario {
 	
 	public void agregarPermiso(Cartelera cartelera) {
 		this.cartelerasPermitidas.add(cartelera);
+		cartelera.getPublicadores().add(this);
 	}
 	
 	public void removerPermiso(Cartelera cartelera) {
-		this.cartelerasPermitidas.remove(cartelera);
+		if (this.cartelerasPermitidas.remove(cartelera)) {
+			cartelera.getPublicadores().remove(this);
+		}
 	}
 	
 	// Metodos de gestion de carteleras con interes
 	
 	public void agregarInteres(Cartelera cartelera) {
 		this.cartelerasConInteres.add(cartelera);
+		cartelera.getInteresados().add(this);
 	}
 	
 	public void removerInteres(Cartelera cartelera) {
-		this.cartelerasConInteres.remove(cartelera);
+		if (this.cartelerasConInteres.remove(cartelera)) {
+			cartelera.getInteresados().remove(this);
+		}
 	}
 	
 	
