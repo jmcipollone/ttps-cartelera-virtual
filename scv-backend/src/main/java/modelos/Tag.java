@@ -67,6 +67,24 @@ public class Tag {
 	public void setInstanteCreacion(Date instanteCreacion) {
 		this.instanteCreacion = instanteCreacion;
 	}
+	
+	// Metodos de comparacion
+	
+	@Override
+	public boolean equals(Object otroTag) {		
+		// Retorna verdadero si el objeto se compara con si mismo
+		if (this == otroTag) {
+			return true;
+		}		
+		// Comprueba si el objeto dado es una instancia de Tag o si el operador instanceof retorna falso
+		if (!(otroTag instanceof Tag)) {
+			return false;			
+		}
+		// Castear el objeto dado como parametro a la clase Tag para poder compararlos por su identificador
+		Tag tag = (Tag) otroTag;		
+		
+		return this.getId() == tag.getId();
+	}
 
 		
 }

@@ -10,6 +10,6 @@ public interface TagDao extends EntidadDao<Tag> {
 	
 	public List<Tag> recuperarTodos();
 	
-	public List<Tag> recuperarConNombre(String nombre);
+	public List<Tag> recuperarConTexto(String texto);
 	
 }

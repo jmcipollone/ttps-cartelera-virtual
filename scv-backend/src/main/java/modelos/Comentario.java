@@ -47,6 +47,20 @@ public class Comentario {
 	
 	public Comentario() {}
 	
+	/**
+	 * Crea un comentario para la publicacion con el texto y autor especificados.
+	 * 
+	 * @param texto
+	 * @param publicacion
+	 * @param autor
+	 */
+	public Comentario(String texto, Publicacion publicacion, Usuario autor) {
+		this.texto = texto;
+		this.instanteCreacion = new Date();
+		this.publicacion = publicacion;
+		this.autor = autor;
+	}
+	
 	
 	// Getters/setters
 

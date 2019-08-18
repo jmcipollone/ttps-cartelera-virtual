@@ -66,7 +66,7 @@ public class Cartelera {
 	)
 	private List<Usuario> interesados;
 	
-	@ManyToMany
+	@ManyToMany()
 	@JoinTable(
 		name="carteleras_tags",
 		joinColumns=@JoinColumn(name="carteleraId", referencedColumnName="id"),
@@ -122,7 +122,7 @@ public class Cartelera {
 		this.descripcion = descripcion;
 	}
 
-	public boolean isHabilitada() {
+	public boolean getHabilitada() {
 		return habilitada;
 	}
 
@@ -173,13 +173,13 @@ public class Cartelera {
 	// Metodos de gestion de tags
 	
 	public void agregarTag(Tag tag) {
-		if (!tags.contains(tag)) {
-			tags.add(tag);			
+		if (!this.tags.contains(tag)) {
+			this.tags.add(tag);			
 		}		
 	}
 	
-	public void removerTag(Tag tag) {
-		tags.remove(tag);	// No es necesario comprobar existencia del tag, puesto que el metodo remove() lo hace
+	public void removerTag(Tag tag) {		
+		this.tags.remove(tag);	// No es necesario comprobar existencia del tag, puesto que el metodo remove() lo hace								
 	}
 	
 	// Metodos de gestion de publicaciones

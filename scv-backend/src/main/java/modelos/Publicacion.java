@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -70,7 +71,7 @@ public class Publicacion {
 	)
 	private List<Tag> tags;
 	
-	@OneToMany(mappedBy="publicacion")
+	@OneToMany(mappedBy="publicacion", cascade={CascadeType.PERSIST, CascadeType.REMOVE, CascadeType.MERGE})
 	private List<RecursoPublicacion> recursos;
 	
 	@OneToMany(mappedBy="publicacion")
@@ -79,6 +80,20 @@ public class Publicacion {
 	
 	// Constructores
 	
+	/**
+	 * Crea una publicacion especificando su cartelera, titulo, texto, si admite o no comentarios, autor, recursos y tags.
+	 * 
+	 * Las colecciones de recursos y tags asociados a la publicacion no se asignan en forma directa, sino que se deben agregar sus
+	 * elementos uno a uno para asegurar de que se mantenga una relacion de conocimiento bidireccional.
+	 * 
+	 * @param cartelera
+	 * @param titulo
+	 * @param texto
+	 * @param comentariosHabilitados
+	 * @param autor
+	 * @param recursos
+	 * @param tags
+	 */
 	public Publicacion(Cartelera cartelera, String titulo, String texto, boolean comentariosHabilitados, Usuario autor,
 			List<RecursoPublicacion> recursos, List<Tag> tags) {
 		this.titulo = titulo;
@@ -87,13 +102,39 @@ public class Publicacion {
 		this.comentariosHabilitados = comentariosHabilitados;
 		this.instanteCreacion = new Date();
 		this.cartelera = cartelera;
-		this.autor = autor;
-		this.tags = tags;
-		this.recursos = recursos;
-		this.comentarios = new ArrayList<Comentario>();
+		this.autor = autor;		
+		this.comentarios = new ArrayList<Comentario>();		
+		this.tags = new ArrayList<Tag>();
+		for (Tag tag : tags) {
+			this.agregarTag(tag);			
+		}		
+		this.recursos = new ArrayList<RecursoPublicacion>();
+		for (RecursoPublicacion recurso : recursos) {
+			this.agregarRecurso(recurso);			
+		}			
 	}
 	
+	/**
+	 * Crea una publicacion especificando su cartelera, titulo, texto, si admite o no comentarios, y su autor.
+	 * 
+	 * Las colecciones de recursos y tags se crean vacías mendiante este constructor.
+	 * 
+	 * @param cartelera
+	 * @param titulo
+	 * @param texto
+	 * @param comentariosHabilitados
+	 * @param autor
+	 */
+	public Publicacion(Cartelera cartelera, String titulo, String texto, boolean comentariosHabilitados, Usuario autor) {		
+		this(cartelera, titulo, texto, comentariosHabilitados, autor, new ArrayList<RecursoPublicacion>(), new ArrayList<Tag>());		
+	}
+	
+	/**
+	 * Crea una publicacion sin inicializar sus propiedades.
+	 *
+	 */
 	public Publicacion() {}
+	
 	
 	// Getters/setters
 
